@@ -352,7 +352,7 @@ jQuery.fn.mapAttributes = function(prefix) {
 
     var leftPos = 0;
     $.each($(container).children('div'), function(i, mydiv){
-      leftPos += $(mydiv).width();
+      leftPos += $(mydiv).width() / 2;
     });
 
     if (!submenu) {
