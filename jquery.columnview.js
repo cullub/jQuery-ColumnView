@@ -56,7 +56,8 @@ jQuery.fn.mapAttributes = function(prefix) {
 
   // Firefox doesn't repeat keydown events when the key is held, so we use
   // keypress with FF/Gecko/Mozilla to enable continuous keyboard scrolling.
-  var key_event = $.browser.mozilla ? 'keypress' : 'keydown';
+  var isFirefox = typeof InstallTrigger !== 'undefined';
+  var key_event = isFirefox ? 'keypress' : 'keydown';
 
   /**
    * default subtree function, returns child elements of the original list.
@@ -346,7 +347,8 @@ jQuery.fn.mapAttributes = function(prefix) {
     var settings  = data.settings;
 
     var width = false;
-    if (settings.fixedwidth || $.browser.msie) {
+    var isIE = /*@cc_on!@*/false || !!document.documentMode;
+    if (settings.fixedwidth || isIE) {
       width = typeof settings.fixedwidth == "string" ? settings.fixedwidth : '200px';
     }
 
