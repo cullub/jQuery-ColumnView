@@ -207,7 +207,7 @@ jQuery.fn.mapAttributes = function(prefix) {
 				var preview = settings.preview($self);
 			  } else {
 				// If preview is not a function, use default behavior
-				var title = $('<a/>')
+				var title = $('<span/>')
 				  .attr({href: $self.attr('href')})
 				  .text($self.attr('title') ? $self.attr('title') : $self.text());
 				$(previewcontainer).html(title);
@@ -306,9 +306,7 @@ jQuery.fn.mapAttributes = function(prefix) {
           	methods.handleClick($self, event.shiftKey, event.metaKey);
           	
           	if (!$self.closest('.feature').length) {
-	  			//it's not a preview
-          		
-          		//if there's a handler for onChange, call that
+	  			//it's not a preview, so if there's a handler for onChange, call that
 	      		if(settings.onChange) settings.onChange(container.find(".active"));
 	      	}
 	      	
