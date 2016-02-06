@@ -42,17 +42,17 @@ jQuery.fn.mapAttributes = function(prefix) {
  */
 
 (function($) {
-    	var defaults = {
-  		height:		'200px',	// Height of containerobj
-  		multi:     	false,		// Allow multiple selections
-  		preview:    	true,		// Handler for preview pane - true for default handeler, false for no preview
-  		fixedwidth: 	false,		// Use fixed width columns
-  		addCSS:     	true,		// enable to have columnview automatically insert its CSS
-  		useCanvas:  	false,		// enable to have columnview generate a canvas arrow to indicate subcategories.  Disable to use CSS instead
-		attrs: [],			// attributes to pull from original items
-		autoFocus: 	true,		// focus to column onclick
-  		getSubtree: 	getSubtree,	// callback for getting new data. Default: getSubtree
-		onChange:	undefined,	// callback for onclick
+	var defaults = {
+		height:			'200px',	// Height of containerobj
+		multi:			false,		// Allow multiple selections
+		preview:		true,		// Handler for preview pane - true for default handeler, false for no preview
+		fixedwidth:		false,		// Use fixed width columns
+		addCSS:			true,		// enable to have columnview automatically insert its CSS
+		useCanvas:		false,		// enable to have columnview generate a canvas arrow to indicate subcategories.  Disable to use CSS instead
+		attrs: [],					// attributes to pull from original items
+		autoFocus:		true,		// focus to column onclick
+		getSubtree: 	getSubtree,	// callback for getting new data. Default: getSubtree
+		onChange:		undefined,	// callback for onclick
 	};
 
   // Firefox doesn't repeat keydown events when the key is held, so we use
@@ -305,8 +305,12 @@ jQuery.fn.mapAttributes = function(prefix) {
         	//call the handleClick method
           	methods.handleClick($self, event.shiftKey, event.metaKey);
           	
-          	//if there's a handler for onChange, call that
-	      	if(settings.onChange) settings.onChange(container.find(".active"));
+          	if (!$self.closest('.feature').length) {
+	  			//it's not a preview
+          		
+          		//if there's a handler for onChange, call that
+	      		if(settings.onChange) settings.onChange(container.find(".active"));
+	      	}
 	      	
 	      	//if autoFocus is set to true, give this column focus
 	      	if(settings.autoFocus) container.scrollLeft($self.offsetParent().offset().left);
