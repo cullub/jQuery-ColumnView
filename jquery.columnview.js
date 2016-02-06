@@ -2,6 +2,7 @@
  * mapAttributes jQuery Plugin v1.0.0
  *
  * Copyright 2010, Michael Riddle
+ * Copyright 2016, Caleb Gregory <gregoryplace@icloud.com>
  * Licensed under the MIT
  * http://jquery.org/license
  *
