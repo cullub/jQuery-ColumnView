@@ -2,7 +2,6 @@
  * mapAttributes jQuery Plugin v1.0.0
  *
  * Copyright 2010, Michael Riddle
- * Copyright 2016, Caleb Gregory
  * Licensed under the MIT
  * http://jquery.org/license
  *
@@ -27,7 +26,7 @@ jQuery.fn.mapAttributes = function(prefix) {
 
 
 /**
- * jquery.columnview-1.3.js
+ * jquery.columnview-1.4.js
  *
  * Created by Chris Yates on 2009-02-26.
  * http://christianyates.com
@@ -35,6 +34,7 @@ jQuery.fn.mapAttributes = function(prefix) {
  * Copyright 2009 Christian Yates and ASU Mars Space Flight Facility. All rights reserved.
  * Copyright 2011 Manuel Odendahl <wesen@ruinwesen.com>
  * Copyright 2012 James Roberts <feedthefire@gmail.com>
+ * Copyright 2016 Caleb Gregory <gregoryplace@icloud.com>
  *
  * Supported under jQuery 1.5.x or later
  *
@@ -42,18 +42,18 @@ jQuery.fn.mapAttributes = function(prefix) {
  */
 
 (function($) {
-  var defaults = {
-  	height:		'200px',		// Height of containerobj
-    multi:      false,			// Allow multiple selections
-    preview:    true,			// Handler for preview pane - true for default handeler, false for no preview
-    fixedwidth: false,			// Use fixed width columns
-    addCSS:     true,			// enable to have columnview automatically insert its CSS
-    useCanvas:  false,			// enable to have columnview generate a canvas arrow to indicate subcategories.  Disable to use CSS instead
-	attrs: [],					// attributes to pull from original items
-	autoFocus: 	true,			// focus to column onclick
-    getSubtree: getSubtree,		// callback for getting new data. Default: getSubtree
-    onChange:	undefined,		// callback for onclick
-  };
+    	var defaults = {
+  		height:		'200px',	// Height of containerobj
+  		multi:     	false,		// Allow multiple selections
+  		preview:    	true,		// Handler for preview pane - true for default handeler, false for no preview
+  		fixedwidth: 	false,		// Use fixed width columns
+  		addCSS:     	true,		// enable to have columnview automatically insert its CSS
+  		useCanvas:  	false,		// enable to have columnview generate a canvas arrow to indicate subcategories.  Disable to use CSS instead
+		attrs: [],			// attributes to pull from original items
+		autoFocus: 	true,		// focus to column onclick
+  		getSubtree: 	getSubtree,	// callback for getting new data. Default: getSubtree
+		onChange:	undefined,	// callback for onclick
+	};
 
   // Firefox doesn't repeat keydown events when the key is held, so we use
   // keypress with FF/Gecko/Mozilla to enable continuous keyboard scrolling.
