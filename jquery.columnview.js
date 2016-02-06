@@ -149,6 +149,11 @@ jQuery.fn.mapAttributes = function(prefix) {
       // links within the same level, if metakey is not being used
       $('div:gt('+level+')', container).remove();
       
+      if ($self.closest('.feature').length) {
+      	//it's a preview, so don't do anything
+	return;	
+      }
+
       if (metaKey) {
         /* on meta key, toggle selections, and remove nothing */
         if ($self.hasClass('active')) {
