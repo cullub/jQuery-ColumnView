@@ -1,0 +1,62 @@
+/**
+ * jQuery Column view CSS
+ * 
+ * Thanks: Christian Yates
+ *
+ * Copyright 2016, Caleb Gregory <gregoryplace@icloud.com>
+ * 
+ */
+
+.containerobj {
+  border: 1px solid #444;
+  height: 5em;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  position: relative;
+}
+.containerobj div {
+  height: 100%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  position: absolute;
+}
+.containerobj a {
+  display: block;
+  white-space: nowrap;
+  clear: both;
+  padding-right: 15px;
+  overflow: hidden;
+  text-decoration: none;
+}
+.containerobj a:focus {
+  outline: none;
+}
+.containerobj a canvas {
+}
+.containerobj .feature {
+  min-width: 300px;
+  overflow-y: auto;
+  padding: 10px;
+}
+.containerobj .feature a {
+  white-space: normal;
+}
+.containerobj .hasChildMenu {
+  
+}
+.containerobj .active {
+  background-color: #3671cf;
+  color: #fff;
+}
+.containerobj .inpath {
+  background-color: #d4d4d4;
+  color: #000;
+}
+.containerobj .hasChildMenu .widget {
+  color: #5b5b5b;
+  position: absolute;
+  right: 0;
+  text-decoration: none;
+  font-size: 0.7em;
+}
