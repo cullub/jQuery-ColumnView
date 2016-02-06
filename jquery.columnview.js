@@ -2,7 +2,7 @@
  * mapAttributes jQuery Plugin v1.0.0
  *
  * Copyright 2010, Michael Riddle
- * Copyright 2016, Caleb Gregory <gregoryplace@icloud.com>
+ * Copyright 2016, Caleb Gregory
  * Licensed under the MIT
  * http://jquery.org/license
  *
@@ -43,26 +43,27 @@ jQuery.fn.mapAttributes = function(prefix) {
 
 (function($) {
   var defaults = {
-  	height:		'100px',	// Height of containerobj
-    multi:      false,		// Allow multiple selections
-    preview:    true,		// Handler for preview pane
-    fixedwidth: false,		// Use fixed width columns
-    addCSS:     true,		// enable to have columnview automatically insert its CSS
-    useCanvas:  true,		// enable to have columnview generate a canvas arrow to indicate subcategories
-	attrs: [],				// attributes to pull from original items
-	autoFocus: true,		// focus to column onclick
-    getSubtree: undefined,	// callback for getting new data
-    onChange:	undefined	// callback for onclick
+  	height:		'200px',		// Height of containerobj
+    multi:      false,			// Allow multiple selections
+    preview:    true,			// Handler for preview pane - true for default handeler, false for no preview
+    fixedwidth: false,			// Use fixed width columns
+    addCSS:     true,			// enable to have columnview automatically insert its CSS
+    useCanvas:  false,			// enable to have columnview generate a canvas arrow to indicate subcategories.  Disable to use CSS instead
+	attrs: [],					// attributes to pull from original items
+	autoFocus: 	true,			// focus to column onclick
+    getSubtree: getSubtree,		// callback for getting new data. Default: getSubtree
+    onChange:	undefined,		// callback for onclick
   };
 
   // Firefox doesn't repeat keydown events when the key is held, so we use
   // keypress with FF/Gecko/Mozilla to enable continuous keyboard scrolling.
-  var key_event = $.browser.mozilla ? 'keypress' : 'keydown';
-
+  var isFirefox = typeof InstallTrigger !== 'undefined'; //kind of a hack to check whether browser is FF (http://stackoverflow.com/a/9851769/3437608)
+  var key_event = isFirefox ? 'keypress' : 'keydown';
+  
   /**
    * default subtree function, returns child elements of the original list.
    **/
-  var getSubtree = function (elt) {
+  var getSubtree = function (elt) { //elt stands for element - this should return the children of elt.
     var children = $(elt).data("sub");
     if (children) {
       return children.children('li');
@@ -72,6 +73,8 @@ jQuery.fn.mapAttributes = function(prefix) {
   };
 
   var methods = {
+  
+  //init: initial setup
     init: function (options) {
       var $this = $(this);
       var data = $this.data("columnview");
@@ -88,7 +91,8 @@ jQuery.fn.mapAttributes = function(prefix) {
       if (!settings.getSubtree) {
         settings.getSubtree = getSubtree;
       }
-
+	
+	//whether to add the CSS to document
       if (settings.addCSS) {
         addCSS();
       }
@@ -99,7 +103,7 @@ jQuery.fn.mapAttributes = function(prefix) {
       // Reset the original list's id
       var origid = $this.attr('id');
 
-      // Create new top container
+      // Create new top container (first column)
       var $container = $('<div/>').addClass('containerobj').css({'height':settings.height}).attr({'id':origid + '-columnview-container'}).insertAfter($this);
       var $topdiv    = $('<div class="top"></div>').appendTo($container);
 
@@ -144,17 +148,17 @@ jQuery.fn.mapAttributes = function(prefix) {
       var settings = data.settings;
 
       $self.focus();
-
+	  	
+	  	if ($self.closest('.feature').length) {
+	  		//it's a preview, so don't do anything
+	  		return;	
+	  	}
+      
       var level = $('div', container).index($self.parents('div'));
       // Remove blocks to the right in the tree, and 'deactivate' other
       // links within the same level, if metakey is not being used
       $('div:gt('+level+')', container).remove();
       
-      if ($self.closest('.feature').length) {
-      	//it's a preview, so don't do anything
-	return;	
-      }
-
       if (metaKey) {
         /* on meta key, toggle selections, and remove nothing */
         if ($self.hasClass('active')) {
@@ -171,30 +175,38 @@ jQuery.fn.mapAttributes = function(prefix) {
         $('div:eq('+level+') a', container).slice(range[0], range[1]).addClass('active');
         $self.addClass('active');
       } else {
+      	//no shift key, and no meta key.
+      	
+      	//remove classes active and inpath in anchors in same level
         $('div:eq('+level+') a', container)
           .removeClass('active')
           .removeClass('inpath');
+          
+        //add class inpath to currently selected item, and remove class active
         $('.active', container).addClass('inpath');
         $('div:lt('+level+') a', container).removeClass('active');
-
+		
+		//highlight the new one (that just got clicked)
         $self.addClass('active');
         
+        //if the new item has children add another menu
         if ($self.hasClass("hasChildMenu")) {
           // Menu has children, so add another submenu
           submenu(container, $self);
           /* triggering will happen in submenu */
           return;
-        } else {
-          // No children, show title instead (if it exists, or a link)          
+        } else { 
+          // No children; show preview (title if it exists, or a just text)        
           if (settings.preview) {
           	  // If preview, append preview pane
 		      var previewcontainer = $('<div/>').addClass('feature').appendTo(container);
-			  // Fire preview handler function
+			  
+			  // Fire preview handler function (set manually in settings, else default)
 			  if ($.isFunction(settings.preview)) {
 				// We're passing the element back to the callback
 				var preview = settings.preview($self);
 			  } else {
-				// If preview is not a function, use a default behavior
+				// If preview is not a function, use default behavior
 				var title = $('<a/>')
 				  .attr({href: $self.attr('href')})
 				  .text($self.attr('title') ? $self.attr('title') : $self.text());
@@ -209,7 +221,7 @@ jQuery.fn.mapAttributes = function(prefix) {
           var fillwidth = $(container).width() - remainingspace;
           $(previewcontainer).css({'top':0,'left':remainingspace}).width(fillwidth).show();
         }
-      }
+      } 
 
       origElt.trigger("columnview_select", [container.find(".active")]);
     },
@@ -269,28 +281,35 @@ jQuery.fn.mapAttributes = function(prefix) {
 
       if ($target.is("a,span")) {
         if ($target.is("span")){
-          $self = $target.parent();
+          $self = $target.parent(); //if it's a span, set $self to the span's parent element (should be an anchor)
         }
         else {
-          $self = $target;
+          $self = $target; //if it's an anchor, set $self to it.
         }
-
+		
+		//if multiple selection is disabled, ignore the shift and meta keys.
         if (!settings.multi) {
           delete event.shiftKey;
           delete event.metaKey;
         }
 
         $self.focus();
-
+		
+		//if the event was a doubleclick, call the doubleclick function
         if (event.type == "dblclick") {
           origElt.trigger("columnview_dblclick", [$self]);
         }
 
         // Handle clicks
         if (event.type == "click") {
-          methods.handleClick($self, event.shiftKey, event.metaKey);
-	      if(settings.onChange) settings.onChange(container.find(".active"));
-	      if(settings.autoFocus) container.scrollLeft($self.offsetParent().offset().left);
+        	//call the handleClick method
+          	methods.handleClick($self, event.shiftKey, event.metaKey);
+          	
+          	//if there's a handler for onChange, call that
+	      	if(settings.onChange) settings.onChange(container.find(".active"));
+	      	
+	      	//if autoFocus is set to true, give this column focus
+	      	if(settings.autoFocus) container.scrollLeft($self.offsetParent().offset().left);
         }
 		
 		// Handle Keyboard navigation
@@ -299,24 +318,28 @@ jQuery.fn.mapAttributes = function(prefix) {
           switch (event.keyCode){
           case (37): //left
             $self.parent().prev().children('.inpath').focus().trigger("click");
+            event.preventDefault();
             break;
           case (38): //up
             $self.prev().focus().trigger("click");
+            event.preventDefault();
             break;
           case (39): //right
             if ($self.hasClass('hasChildMenu')) {
               $self.parent().next().children('a:first').focus().trigger("click");
+              event.preventDefault();
             }
             break;
           case (40): //down
             $self.next().focus().trigger("click");
+            event.preventDefault();
             break;
           case (13): //enter
             $self.trigger("dblclick");
+            event.preventDefault();
             break;
           }
         }
-        event.preventDefault();
       }
 
     }
@@ -352,7 +375,8 @@ jQuery.fn.mapAttributes = function(prefix) {
     var settings  = data.settings;
 
     var width = false;
-    if (settings.fixedwidth || $.browser.msie) {
+    var isIE = /*@cc_on!@*/false || !!document.documentMode; //http://stackoverflow.com/a/9851769/3437608 - to replace $.browser.msie, which is gone since jQuery 1.9
+    if (settings.fixedwidth || isIE) {
       width = typeof settings.fixedwidth == "string" ? settings.fixedwidth : '200px';
     }
 
@@ -469,62 +493,17 @@ jQuery.fn.mapAttributes = function(prefix) {
 
   function addCSS() {
     // Add stylesheet, but only once
-    if (!$('.containerobj').get(0)) {
-      $('head').prepend('\
-<style type="text/css" media="screen">\
-.containerobj {\
-border: 1px solid #ccc;\
-height:5em;\
-overflow-x:auto;\
-overflow-y:hidden;\
-white-space:nowrap;\
-position:relative;\
-}\
-.containerobj div {\
-height:100%;\
-overflow-y:scroll;\
-overflow-x:hidden;\
-position:absolute;\
-}\
-.containerobj a {\
-display:block;\
-white-space:nowrap;\
-clear:both;\
-padding-right:15px;\
-overflow:hidden;\
-text-decoration:none;\
-}\
-.containerobj a:focus {\
-outline:none;\
-}\
-.containerobj a canvas {\
-}\
-.containerobj .feature {\
-min-width:200px;\
-overflow-y:auto;\
-}\
-.containerobj .feature a {\
-white-space:normal;\
-}\
-.containerobj .hasChildMenu {\
-}\
-.containerobj .active {\
-background-color:#3671cf;\
-color:#fff;\
-}\
-.containerobj .inpath {\
-background-color:#d0d0d0;\
-color:#000;\
-}\
-.containerobj .hasChildMenu .widget {\
-color:black;\
-position:absolute;\
-right:0;\
-text-decoration:none;\
-font-size:0.7em;\
-}\
-</style>');
-    }
+	var cssId = 'columnViewCss';  // you could encode the css path itself to generate id..
+	if (!document.getElementById(cssId)) {
+	    var head  = document.getElementsByTagName('head')[0];
+	    var link  = document.createElement('link');
+	    link.id   = cssId;
+    	link.rel  = 'stylesheet';
+	    link.type = 'text/css';
+	    link.href = 'css/jquery.columnview.css';
+	    link.media = 'all';
+	    head.appendChild(link);
+	}
   }
 
 })(jQuery);
