@@ -304,14 +304,14 @@ jQuery.fn.mapAttributes = function(prefix) {
         if (event.type == "click") {
         	//call the handleClick method
           	methods.handleClick($self, event.shiftKey, event.metaKey);
-          	
-          	if (!$self.closest('.feature').length) {
-	  			//it's not a preview, so if there's a handler for onChange, call that
-	      		if(settings.onChange) settings.onChange(container.find(".active"));
-	      	}
 	      	
 	      	//if autoFocus is set to true, give this column focus
 	      	if(settings.autoFocus) container.scrollLeft($self.offsetParent().offset().left);
+
+          	if (!$self.closest('.feature').length) {
+	  			//it's not a preview (that got clicked), so if there's a handler for onChange, call that
+	      		if(settings.onChange) settings.onChange(container.find(".active"));
+	      	}
         }
 		
 		// Handle Keyboard navigation
